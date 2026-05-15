@@ -4,42 +4,32 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Panel Admin — WebJuan</title>
-
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
-
   <style>
     body { background: #121212; color: #f0f0f0; font-family: sans-serif; }
     .card { background: #1e1e1e; border: 1px solid #333; }
-
     .form-control, .form-select, textarea {
-      background: #2a2a2a !important;
-      border: 1px solid #444 !important;
-      color: #f0f0f0 !important;
+      background: #2a2a2a !important; border: 1px solid #444 !important; color: #f0f0f0 !important;
     }
     .form-control:focus, .form-select:focus, textarea:focus {
-      border-color: #7c3aed !important;
-      box-shadow: 0 0 0 2px rgba(124,58,237,0.25) !important;
+      border-color: #7c3aed !important; box-shadow: 0 0 0 2px rgba(124,58,237,0.25) !important;
     }
     .form-control::placeholder, textarea::placeholder { color: #666 !important; }
     .form-label { color: #aaa; font-size: .82rem; }
-
     .btn-morado { background: #7c3aed; border: none; color: #fff; }
     .btn-morado:hover { background: #6d28d9; color: #fff; }
     .btn-outline-morado { border: 1px solid #7c3aed; color: #a78bfa; background: none; }
     .btn-outline-morado:hover { background: #7c3aed; color: #fff; }
-
     .table { color: #f0f0f0; }
     .table thead th { background: #1a0a2e; color: #c4b5fd; border-color: #333; font-size: .82rem; }
     .table tbody td { border-color: #2a2a2a; font-size: .85rem; vertical-align: middle; }
     .table tbody tr:hover { background: #252525; cursor: pointer; }
     .table tbody tr.selected-row { background: #2d1b4e !important; }
-
     .badge-espera     { background: #444;    color: #f0f0f0; }
     .badge-confirmado { background: #166534; color: #bbf7d0; }
     .badge-rechazado  { background: #7f1d1d; color: #fecaca; }
     .badge-cita       { background: #1e3a5f; color: #bae6fd; }
-
     .upload-area {
       border: 2px dashed #444; border-radius: 8px; background: #2a2a2a;
       padding: 1rem; text-align: center; cursor: pointer;
@@ -47,358 +37,327 @@
     }
     .upload-area:hover { border-color: #7c3aed; }
     .upload-area input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
-
     #detailPanel { display: none; }
     #placeholderPanel { display: block; }
     .detail-label { font-size: .72rem; color: #888; text-transform: uppercase; letter-spacing: .5px; }
     .detail-value { font-size: .9rem; margin-bottom: .75rem; }
-
     #loginPanel { min-height: 100vh; display: flex; align-items: center; justify-content: center; }
-    #appPanel   { display: none; }
-
+    #appPanel { display: none; }
     .ref-img { max-height: 120px; border-radius: 6px; border: 1px solid #444; }
   </style>
 </head>
 <body>
 
-  <!-- LOGIN -->
-  <div id="loginPanel">
-    <div class="card p-4" style="width:100%; max-width:340px; margin:1rem;">
-      <h5 style="color:#c4b5fd;" class="mb-3 text-center"><i class="bi bi-shield-lock me-1"></i>Panel Admin</h5>
-      <div class="mb-3">
-        <label class="form-label">Contraseña</label>
-        <input type="password" class="form-control" id="passwordInput" placeholder="••••••••"
-          onkeydown="if(event.key==='Enter') login()">
+<!-- LOGIN -->
+<div id="loginPanel">
+  <div class="card p-4" style="width:100%;max-width:340px;margin:1rem;">
+    <h5 style="color:#c4b5fd;" class="mb-3 text-center"><i class="bi bi-shield-lock me-1"></i>Panel Admin</h5>
+    <div class="mb-3">
+      <label class="form-label">Contraseña</label>
+      <input type="password" class="form-control" id="passwordInput" placeholder="••••••••"
+        onkeydown="if(event.key==='Enter') login()">
+    </div>
+    <button class="btn btn-morado w-100" onclick="login()">Ingresar</button>
+    <div id="loginError" style="font-size:.8rem;color:#f87171;margin-top:.5rem;display:none;">Contraseña incorrecta.</div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="appPanel">
+  <div style="background:#1a0a2e;border-bottom:2px solid #7c3aed;padding:.75rem 0;">
+    <div class="container-fluid px-3 d-flex justify-content-between align-items-center">
+      <h5 class="mb-0" style="color:#c4b5fd;"><i class="bi bi-speedometer2 me-1"></i>Panel Admin — WebJuan</h5>
+      <div class="d-flex gap-2 align-items-center">
+        <span id="lastUpdate" style="font-size:.72rem;color:#666;"></span>
+        <button class="btn btn-outline-morado btn-sm" onclick="cargarSolicitudes()"><i class="bi bi-arrow-clockwise"></i></button>
+        <button class="btn btn-sm" style="background:#222;color:#aaa;border:1px solid #333;" onclick="logout()"><i class="bi bi-box-arrow-right"></i></button>
       </div>
-      <button class="btn btn-morado w-100" onclick="login()">Ingresar</button>
-      <div id="loginError" style="font-size:.8rem; color:#f87171; margin-top:.5rem; display:none;">Contraseña incorrecta.</div>
     </div>
   </div>
 
-  <!-- APP -->
-  <div id="appPanel">
+  <div class="container-fluid px-3 py-3">
+    <div class="row g-3">
 
-    <div style="background:#1a0a2e; border-bottom:2px solid #7c3aed; padding:.75rem 0;">
-      <div class="container-fluid px-3 d-flex justify-content-between align-items-center">
-        <h5 class="mb-0" style="color:#c4b5fd;"><i class="bi bi-speedometer2 me-1"></i>Panel Admin — WebJuan</h5>
-        <div class="d-flex gap-2 align-items-center">
-          <span id="lastUpdate" style="font-size:.72rem; color:#666;"></span>
-          <button class="btn btn-outline-morado btn-sm" onclick="cargarSolicitudes()">
-            <i class="bi bi-arrow-clockwise"></i>
-          </button>
-          <button class="btn btn-sm" style="background:#222; color:#aaa; border:1px solid #333;" onclick="logout()">
-            <i class="bi bi-box-arrow-right"></i>
-          </button>
+      <!-- LISTA -->
+      <div class="col-12 col-lg-7">
+        <div class="card p-3">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <h6 style="color:#c4b5fd;" class="mb-0"><i class="bi bi-list-ul me-1"></i>Solicitudes</h6>
+            <span id="totalSolicitudes" style="font-size:.78rem;color:#666;"></span>
+          </div>
+          <div class="mb-2">
+            <select class="form-select form-select-sm" id="filtroEstado" onchange="filtrar()">
+              <option value="">Todos los estados</option>
+              <option value="En Espera">En Espera</option>
+              <option value="Confirmado">Confirmado</option>
+              <option value="Rechazado">Rechazado</option>
+              <option value="Agendar cita">Agendar cita</option>
+            </select>
+          </div>
+          <div style="overflow-x:auto;">
+            <table class="table table-sm mb-0">
+              <thead><tr><th>ID</th><th>Nombre</th><th>Telefono</th><th>Estado</th><th>Fecha</th></tr></thead>
+              <tbody id="tablaBody">
+                <tr><td colspan="5" class="text-center" style="color:#666;">Cargando...</td></tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
-    </div>
 
-    <div class="container-fluid px-3 py-3">
-      <div class="row g-3">
+      <!-- DETALLE -->
+      <div class="col-12 col-lg-5">
+        <div class="card p-3" id="detailPanel">
+          <h6 style="color:#c4b5fd;" class="mb-3"><i class="bi bi-pencil-square me-1"></i>Gestionar solicitud</h6>
 
-        <!-- LISTA -->
-        <div class="col-12 col-lg-7">
-          <div class="card p-3">
-            <div class="d-flex justify-content-between align-items-center mb-2">
-              <h6 style="color:#c4b5fd;" class="mb-0"><i class="bi bi-list-ul me-1"></i>Solicitudes</h6>
-              <span id="totalSolicitudes" style="font-size:.78rem; color:#666;"></span>
+          <div class="mb-3 p-2" style="background:#2a2a2a;border-radius:8px;">
+            <div class="row g-2">
+              <div class="col-6">
+                <div class="detail-label">Nombre</div>
+                <div class="detail-value" id="d_nombre">—</div>
+              </div>
+              <div class="col-6">
+                <div class="detail-label">ID</div>
+                <div class="detail-value" id="d_id">—</div>
+              </div>
+              <div class="col-6">
+                <div class="detail-label">Telefono</div>
+                <div class="detail-value" id="d_telefono">—</div>
+              </div>
+              <div class="col-6">
+                <div class="detail-label">Correo</div>
+                <div class="detail-value" id="d_correo" style="font-size:.8rem;word-break:break-all;">—</div>
+              </div>
             </div>
-            <div class="mb-2">
-              <select class="form-select form-select-sm" id="filtroEstado" onchange="filtrar()">
-                <option value="">Todos los estados</option>
+            <div class="detail-label">Descripcion del cliente</div>
+            <div class="detail-value" id="d_obs_cliente" style="font-size:.82rem;color:#ccc;">—</div>
+            <div class="detail-label">Imagen de referencia</div>
+            <div id="d_referencia_wrap"><span style="color:#666;font-size:.82rem;">Sin imagen</span></div>
+          </div>
+
+          <!-- SIN enctype multipart + enviarWHA siempre true -->
+          <form id="adminForm"
+                action="https://script.google.com/macros/s/AKfycbzHRxeLzCId6d7Ul3BblQ2jw4oXKBjH1MkNyrSwzucLNYCBphTfADTqh0_eMU0QwJU/exec"
+                method="POST">
+
+            <input type="hidden" name="accion"    value="actualizar">
+            <input type="hidden" name="id"        id="f_id">
+            <input type="hidden" name="url_qr"    id="f_url_qr">
+            <input type="hidden" name="enviarWHA" value="true">
+
+            <div class="mb-3">
+              <label class="form-label">Estado</label>
+              <select class="form-select" name="estado" id="a_estado">
                 <option value="En Espera">En Espera</option>
                 <option value="Confirmado">Confirmado</option>
                 <option value="Rechazado">Rechazado</option>
                 <option value="Agendar cita">Agendar cita</option>
               </select>
             </div>
-            <div style="overflow-x:auto;">
-              <table class="table table-sm mb-0">
-                <thead>
-                  <tr>
-                    <th>ID</th><th>Nombre</th><th>Telefono</th><th>Estado</th><th>Fecha</th>
-                  </tr>
-                </thead>
-                <tbody id="tablaBody">
-                  <tr><td colspan="5" class="text-center" style="color:#666;">Cargando...</td></tr>
-                </tbody>
-              </table>
+
+            <div class="mb-3">
+              <label class="form-label">Monto (solo Confirmado)</label>
+              <input type="text" class="form-control" name="monto" id="a_monto" placeholder="Ej: Bs. 500">
             </div>
-          </div>
+
+            <div class="mb-3">
+              <label class="form-label">Observacion empresa</label>
+              <textarea class="form-control" name="obs_empresa" id="a_obs_empresa" rows="3"
+                placeholder="Motivo de rechazo, detalles de cita, notas..."></textarea>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label" style="color:#c4b5fd;">QR de pago (solo Confirmado)</label>
+              <div class="upload-area" id="qrUploadArea">
+                <input type="file" id="qr_file" accept="image/*" onchange="handleQR(this)">
+                <i class="bi bi-qr-code" style="font-size:1.5rem;color:#7c3aed;"></i>
+                <p style="font-size:.8rem;color:#888;margin:.25rem 0 0;">Sube el QR de pago</p>
+              </div>
+              <div id="qrPreviewWrap" style="display:none;margin-top:.5rem;">
+                <img id="qrPreview" style="max-height:100px;border-radius:6px;border:1px solid #444;">
+                <div id="qrFilename" style="font-size:.75rem;color:#6ee7b7;margin-top:.3rem;"></div>
+              </div>
+              <div id="qrUploadStatus" style="font-size:.78rem;color:#a78bfa;display:none;margin-top:.3rem;"></div>
+            </div>
+
+            <button type="button" class="btn btn-morado w-100" id="btnGuardar" onclick="guardarCambios()">
+              <span id="btnGuardarText"><i class="bi bi-send me-1"></i>Guardar y enviar WhatsApp</span>
+              <span id="btnGuardarLoading" style="display:none;">
+                <span class="spinner-border spinner-border-sm me-1"></span>Procesando...
+              </span>
+            </button>
+
+          </form>
         </div>
 
-        <!-- DETALLE -->
-        <div class="col-12 col-lg-5">
-
-          <div class="card p-3" id="detailPanel">
-            <h6 style="color:#c4b5fd;" class="mb-3"><i class="bi bi-pencil-square me-1"></i>Gestionar solicitud</h6>
-
-            <!-- Info cliente -->
-            <div class="mb-3 p-2" style="background:#2a2a2a; border-radius:8px;">
-              <div class="row g-2">
-                <div class="col-6">
-                  <div class="detail-label">Nombre</div>
-                  <div class="detail-value" id="d_nombre">—</div>
-                </div>
-                <div class="col-6">
-                  <div class="detail-label">ID</div>
-                  <div class="detail-value" id="d_id">—</div>
-                </div>
-                <div class="col-6">
-                  <div class="detail-label">Telefono</div>
-                  <div class="detail-value" id="d_telefono">—</div>
-                </div>
-                <div class="col-6">
-                  <div class="detail-label">Correo</div>
-                  <div class="detail-value" id="d_correo" style="font-size:.8rem; word-break:break-all;">—</div>
-                </div>
-              </div>
-              <div class="detail-label">Descripcion del cliente</div>
-              <div class="detail-value" id="d_obs_cliente" style="font-size:.82rem; color:#ccc;">—</div>
-              <div class="detail-label">Imagen de referencia</div>
-              <div id="d_referencia_wrap"><span style="color:#666; font-size:.82rem;">Sin imagen</span></div>
-            </div>
-
-            <!-- ✅ FIX: Sin enctype multipart/form-data — así e.parameter funciona en Apps Script -->
-            <form id="adminForm"
-                  action="https://script.google.com/macros/s/AKfycbzHRxeLzCId6d7Ul3BblQ2jw4oXKBjH1MkNyrSwzucLNYCBphTfADTqh0_eMU0QwJU/exec"
-                  method="POST">
-
-              <input type="hidden" name="accion"    id="f_accion"    value="actualizar">
-              <input type="hidden" name="id"        id="f_id">
-              <input type="hidden" name="url_qr"    id="f_url_qr">
-              <input type="hidden" name="enviarWHA" id="f_enviarWHA" value="false">
-
-              <div class="mb-3">
-                <label class="form-label">Estado</label>
-                <select class="form-select" name="estado" id="a_estado">
-                  <option value="En Espera">En Espera</option>
-                  <option value="Confirmado">Confirmado</option>
-                  <option value="Rechazado">Rechazado</option>
-                  <option value="Agendar cita">Agendar cita</option>
-                </select>
-              </div>
-
-              <div class="mb-3">
-                <label class="form-label">Monto (solo Confirmado)</label>
-                <input type="text" class="form-control" name="monto" id="a_monto" placeholder="Ej: Bs. 500">
-              </div>
-
-              <div class="mb-3">
-                <label class="form-label">Observacion empresa</label>
-                <textarea class="form-control" name="obs_empresa" id="a_obs_empresa" rows="3"
-                  placeholder="Motivo de rechazo, detalles de cita, notas..."></textarea>
-              </div>
-
-              <!-- QR -->
-              <div class="mb-3">
-                <label class="form-label" style="color:#c4b5fd;">QR de pago (solo Confirmado)</label>
-                <div class="upload-area" id="qrUploadArea">
-                  <input type="file" id="qr_file" accept="image/*" onchange="handleQR(this)">
-                  <i class="bi bi-qr-code" style="font-size:1.5rem; color:#7c3aed;"></i>
-                  <p style="font-size:.8rem; color:#888; margin:.25rem 0 0;">Sube el QR de pago</p>
-                </div>
-                <div id="qrPreviewWrap" style="display:none; margin-top:.5rem;">
-                  <img id="qrPreview" style="max-height:100px; border-radius:6px; border:1px solid #444;">
-                  <div id="qrFilename" style="font-size:.75rem; color:#6ee7b7; margin-top:.3rem;"></div>
-                </div>
-                <div id="qrUploadStatus" style="font-size:.78rem; color:#a78bfa; display:none; margin-top:.3rem;"></div>
-              </div>
-
-              <!-- Enviar WHA -->
-              <div class="mb-3 d-flex align-items-center gap-2">
-                <input type="checkbox" class="form-check-input" id="chkWHA"
-                  style="width:18px; height:18px;" onchange="document.getElementById('f_enviarWHA').value = this.checked">
-                <label style="font-size:.85rem; color:#aaa;">Enviar mensaje por WhatsApp y correo</label>
-              </div>
-
-              <button type="button" class="btn btn-morado w-100" id="btnGuardar" onclick="guardarCambios()">
-                <span id="btnGuardarText"><i class="bi bi-save me-1"></i>Guardar cambios</span>
-                <span id="btnGuardarLoading" style="display:none;">
-                  <span class="spinner-border spinner-border-sm me-1"></span>Procesando...
-                </span>
-              </button>
-
-            </form>
-          </div>
-
-          <div class="card p-4 text-center" id="placeholderPanel">
-            <i class="bi bi-hand-index" style="font-size:2rem; color:#444;"></i>
-            <p class="mt-2" style="color:#555; font-size:.85rem;">Selecciona una solicitud de la lista</p>
-          </div>
-
+        <div class="card p-4 text-center" id="placeholderPanel">
+          <i class="bi bi-hand-index" style="font-size:2rem;color:#444;"></i>
+          <p class="mt-2" style="color:#555;font-size:.85rem;">Selecciona una solicitud de la lista</p>
         </div>
       </div>
+
     </div>
   </div>
+</div>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-  <script>
-    const APPS_SCRIPT_URL   = 'https://script.google.com/macros/s/AKfycbzHRxeLzCId6d7Ul3BblQ2jw4oXKBjH1MkNyrSwzucLNYCBphTfADTqh0_eMU0QwJU/exec';
-    const CLOUDINARY_CLOUD  = 'dpfoul2dc';
-    const CLOUDINARY_PRESET = 'Unsigned';
-    const PASSWORD          = 'webjuan2025';
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  const APPS_SCRIPT_URL   = 'https://script.google.com/macros/s/AKfycbzHRxeLzCId6d7Ul3BblQ2jw4oXKBjH1MkNyrSwzucLNYCBphTfADTqh0_eMU0QwJU/exec';
+  const CLOUDINARY_CLOUD  = 'dpfoul2dc';
+  const CLOUDINARY_PRESET = 'Unsigned';
+  const PASSWORD          = 'webjuan2025';
 
-    let todasSolicitudes = [];
-    let solicitudActual  = null;
+  let todasSolicitudes = [];
+  let solicitudActual  = null;
 
-    // LOGIN
-    function login() {
-      if (document.getElementById('passwordInput').value === PASSWORD) {
-        document.getElementById('loginPanel').style.display = 'none';
-        document.getElementById('appPanel').style.display   = 'block';
-        cargarSolicitudes();
-      } else {
-        document.getElementById('loginError').style.display = 'block';
-      }
+  function login() {
+    if (document.getElementById('passwordInput').value === PASSWORD) {
+      document.getElementById('loginPanel').style.display = 'none';
+      document.getElementById('appPanel').style.display   = 'block';
+      cargarSolicitudes();
+    } else {
+      document.getElementById('loginError').style.display = 'block';
     }
-    function logout() {
-      document.getElementById('loginPanel').style.display = 'flex';
-      document.getElementById('appPanel').style.display   = 'none';
-      document.getElementById('passwordInput').value = '';
+  }
+
+  function logout() {
+    document.getElementById('loginPanel').style.display = 'flex';
+    document.getElementById('appPanel').style.display   = 'none';
+    document.getElementById('passwordInput').value = '';
+  }
+
+  async function cargarSolicitudes() {
+    try {
+      const r = await fetch(APPS_SCRIPT_URL + '?action=solicitudes');
+      const d = await r.json();
+      todasSolicitudes = (d.data || []).reverse();
+      filtrar();
+      document.getElementById('lastUpdate').textContent = 'Actualizado: ' + new Date().toLocaleTimeString();
+    } catch(e) { console.warn('Error cargando:', e); }
+  }
+
+  function filtrar() {
+    const filtro = document.getElementById('filtroEstado').value;
+    const lista  = filtro ? todasSolicitudes.filter(s => s.Estado === filtro) : todasSolicitudes;
+    renderTabla(lista);
+  }
+
+  function renderTabla(lista) {
+    const tbody = document.getElementById('tablaBody');
+    document.getElementById('totalSolicitudes').textContent = lista.length + ' solicitudes';
+    if (!lista.length) {
+      tbody.innerHTML = '<tr><td colspan="5" class="text-center" style="color:#666;">Sin solicitudes</td></tr>';
+      return;
+    }
+    tbody.innerHTML = lista.map(function(s) {
+      const fecha = s.Timestamp ? new Date(s.Timestamp).toLocaleDateString() : '—';
+      return '<tr onclick=\'seleccionar(' + JSON.stringify(JSON.stringify(s)) + ')\' data-id="' + s.id + '">' +
+        '<td>#' + s.id + '</td>' +
+        '<td>' + (s.Nombre || '—') + '</td>' +
+        '<td>' + (s.Telefono || '—') + '</td>' +
+        '<td>' + badgeEstado(s.Estado) + '</td>' +
+        '<td>' + fecha + '</td>' +
+        '</tr>';
+    }).join('');
+  }
+
+  function badgeEstado(estado) {
+    const map = { 'En Espera':'badge-espera','Confirmado':'badge-confirmado','Rechazado':'badge-rechazado','Agendar cita':'badge-cita' };
+    return '<span class="badge ' + (map[estado]||'badge-espera') + '">' + (estado||'En Espera') + '</span>';
+  }
+
+  function seleccionar(sJson) {
+    const s = JSON.parse(sJson);
+    solicitudActual = s;
+
+    document.querySelectorAll('#tablaBody tr').forEach(tr => tr.classList.remove('selected-row'));
+    const fila = document.querySelector('#tablaBody tr[data-id="' + s.id + '"]');
+    if (fila) fila.classList.add('selected-row');
+
+    document.getElementById('d_id').textContent          = '#' + s.id;
+    document.getElementById('d_nombre').textContent      = s.Nombre     || '—';
+    document.getElementById('d_telefono').textContent    = s.Telefono   || '—';
+    document.getElementById('d_correo').textContent      = s.Correo     || '—';
+    document.getElementById('d_obs_cliente').textContent = s.Obs_cliente || 'Sin descripcion';
+
+    const refWrap = document.getElementById('d_referencia_wrap');
+    if (s.url_referencia && s.url_referencia !== 'Sin referencia') {
+      refWrap.innerHTML = '<a href="' + s.url_referencia + '" target="_blank"><img src="' + s.url_referencia + '" class="ref-img mt-1"></a>';
+    } else {
+      refWrap.innerHTML = '<span style="color:#666;font-size:.82rem;">Sin imagen</span>';
     }
 
-    // CARGAR
-    async function cargarSolicitudes() {
+    document.getElementById('f_id').value          = s.id;
+    document.getElementById('a_estado').value      = s.Estado      || 'En Espera';
+    document.getElementById('a_monto').value       = s.monto       || '';
+    document.getElementById('a_obs_empresa').value = s.Obs_empresa || '';
+    document.getElementById('f_url_qr').value      = s.url_qr      || '';
+
+    document.getElementById('qr_file').value                  = '';
+    document.getElementById('qrPreviewWrap').style.display    = 'none';
+    document.getElementById('qrUploadStatus').style.display   = 'none';
+    document.getElementById('detailPanel').style.display      = 'block';
+    document.getElementById('placeholderPanel').style.display = 'none';
+  }
+
+  function handleQR(input) {
+    const file = input.files[0];
+    if (!file) return;
+    document.getElementById('qrFilename').textContent = '✔ ' + file.name;
+    const r = new FileReader();
+    r.onload = e => {
+      document.getElementById('qrPreview').src = e.target.result;
+      document.getElementById('qrPreviewWrap').style.display = 'block';
+    };
+    r.readAsDataURL(file);
+  }
+
+  async function subirQRCloudinary(file) {
+    const fd = new FormData();
+    fd.append('file', file);
+    fd.append('upload_preset', CLOUDINARY_PRESET);
+    fd.append('folder', 'qr_pagos');
+    const resp = await fetch('https://api.cloudinary.com/v1_1/' + CLOUDINARY_CLOUD + '/upload', { method: 'POST', body: fd });
+    const data = await resp.json();
+    if (data.secure_url) return data.secure_url;
+    throw new Error('Error Cloudinary QR');
+  }
+
+  async function guardarCambios() {
+    if (!solicitudActual) return;
+    setBtnGuardar(true);
+
+    const qrFile = document.getElementById('qr_file').files[0];
+    if (qrFile) {
       try {
-        const r = await fetch(APPS_SCRIPT_URL + '?action=solicitudes');
-        const d = await r.json();
-        todasSolicitudes = (d.data || []).reverse();
-        filtrar();
-        document.getElementById('lastUpdate').textContent = 'Actualizado: ' + new Date().toLocaleTimeString();
-      } catch(e) { console.warn('Error cargando:', e); }
-    }
-
-    function filtrar() {
-      const filtro = document.getElementById('filtroEstado').value;
-      const lista  = filtro ? todasSolicitudes.filter(s => s.Estado === filtro) : todasSolicitudes;
-      renderTabla(lista);
-    }
-
-    function renderTabla(lista) {
-      const tbody = document.getElementById('tablaBody');
-      document.getElementById('totalSolicitudes').textContent = lista.length + ' solicitudes';
-      if (!lista.length) {
-        tbody.innerHTML = '<tr><td colspan="5" class="text-center" style="color:#666;">Sin solicitudes</td></tr>';
-        return;
+        document.getElementById('qrUploadStatus').textContent = '⏳ Subiendo QR...';
+        document.getElementById('qrUploadStatus').style.display = 'block';
+        const url = await subirQRCloudinary(qrFile);
+        document.getElementById('f_url_qr').value = url;
+        document.getElementById('qrUploadStatus').textContent = '✔ QR subido, enviando...';
+      } catch(e) {
+        document.getElementById('qrUploadStatus').textContent = '⚠️ Error subiendo QR, se envia sin el.';
+        console.warn(e);
       }
-      tbody.innerHTML = lista.map(function(s) {
-        const fecha = s.Timestamp ? new Date(s.Timestamp).toLocaleDateString() : '—';
-        return '<tr onclick=\'seleccionar(' + JSON.stringify(JSON.stringify(s)) + ')\' data-id="' + s.id + '">' +
-          '<td>#' + s.id + '</td>' +
-          '<td>' + (s.Nombre || '—') + '</td>' +
-          '<td>' + (s.Telefono || '—') + '</td>' +
-          '<td>' + badgeEstado(s.Estado) + '</td>' +
-          '<td>' + fecha + '</td>' +
-          '</tr>';
-      }).join('');
     }
 
-    function badgeEstado(estado) {
-      const map = { 'En Espera':'badge-espera','Confirmado':'badge-confirmado','Rechazado':'badge-rechazado','Agendar cita':'badge-cita' };
-      return '<span class="badge ' + (map[estado]||'badge-espera') + '">' + (estado||'En Espera') + '</span>';
-    }
+    document.getElementById('adminForm').submit();
+  }
 
-    // SELECCIONAR
-    function seleccionar(sJson) {
-      const s = JSON.parse(sJson);
-      solicitudActual = s;
+  function setBtnGuardar(on) {
+    document.getElementById('btnGuardar').disabled             = on;
+    document.getElementById('btnGuardarText').style.display    = on ? 'none'   : 'inline';
+    document.getElementById('btnGuardarLoading').style.display = on ? 'inline' : 'none';
+  }
 
-      document.querySelectorAll('#tablaBody tr').forEach(tr => tr.classList.remove('selected-row'));
-      const fila = document.querySelector('#tablaBody tr[data-id="' + s.id + '"]');
-      if (fila) fila.classList.add('selected-row');
-
-      document.getElementById('d_id').textContent       = '#' + s.id;
-      document.getElementById('d_nombre').textContent   = s.Nombre    || '—';
-      document.getElementById('d_telefono').textContent = s.Telefono  || '—';
-      document.getElementById('d_correo').textContent   = s.Correo    || '—';
-      document.getElementById('d_obs_cliente').textContent = s.Obs_cliente || 'Sin descripcion';
-
-      const refWrap = document.getElementById('d_referencia_wrap');
-      if (s.url_referencia && s.url_referencia !== 'Sin referencia') {
-        refWrap.innerHTML = '<a href="' + s.url_referencia + '" target="_blank"><img src="' + s.url_referencia + '" class="ref-img mt-1"></a>';
-      } else {
-        refWrap.innerHTML = '<span style="color:#666; font-size:.82rem;">Sin imagen</span>';
-      }
-
-      document.getElementById('f_id').value            = s.id;
-      document.getElementById('a_estado').value        = s.Estado      || 'En Espera';
-      document.getElementById('a_monto').value         = s.monto       || '';
-      document.getElementById('a_obs_empresa').value   = s.Obs_empresa || '';
-      document.getElementById('chkWHA').checked        = false;
-      document.getElementById('f_enviarWHA').value     = 'false';
-      document.getElementById('f_url_qr').value        = s.url_qr      || '';
-
-      document.getElementById('qr_file').value         = '';
-      document.getElementById('qrPreviewWrap').style.display  = 'none';
-      document.getElementById('qrUploadStatus').style.display = 'none';
-
-      document.getElementById('detailPanel').style.display     = 'block';
-      document.getElementById('placeholderPanel').style.display = 'none';
-    }
-
-    // QR
-    function handleQR(input) {
-      const file = input.files[0];
-      if (!file) return;
-      document.getElementById('qrFilename').textContent = '✔ ' + file.name;
-      const r = new FileReader();
-      r.onload = e => {
-        document.getElementById('qrPreview').src = e.target.result;
-        document.getElementById('qrPreviewWrap').style.display = 'block';
-      };
-      r.readAsDataURL(file);
-    }
-
-    async function subirQRCloudinary(file) {
-      const fd = new FormData();
-      fd.append('file', file);
-      fd.append('upload_preset', CLOUDINARY_PRESET);
-      fd.append('folder', 'qr_pagos');
-      const resp = await fetch('https://api.cloudinary.com/v1_1/' + CLOUDINARY_CLOUD + '/upload', { method: 'POST', body: fd });
-      const data = await resp.json();
-      if (data.secure_url) return data.secure_url;
-      throw new Error('Error Cloudinary QR');
-    }
-
-    // GUARDAR
-    async function guardarCambios() {
-      if (!solicitudActual) return;
-      setBtnGuardar(true);
-
-      const qrFile = document.getElementById('qr_file').files[0];
-
-      if (qrFile) {
-        try {
-          document.getElementById('qrUploadStatus').textContent = '⏳ Subiendo QR...';
-          document.getElementById('qrUploadStatus').style.display = 'block';
-          const url = await subirQRCloudinary(qrFile);
-          document.getElementById('f_url_qr').value = url;
-          document.getElementById('qrUploadStatus').textContent = '✔ QR subido, enviando...';
-        } catch(e) {
-          document.getElementById('qrUploadStatus').textContent = '⚠️ Error subiendo QR, se envia sin el.';
-          console.warn(e);
-        }
-      }
-
-      document.getElementById('adminForm').submit();
-    }
-
-    function setBtnGuardar(on) {
-      document.getElementById('btnGuardar').disabled             = on;
-      document.getElementById('btnGuardarText').style.display    = on ? 'none'   : 'inline';
-      document.getElementById('btnGuardarLoading').style.display = on ? 'inline' : 'none';
-    }
-
-    // DRAG DROP QR
-    const qrUA = document.getElementById('qrUploadArea');
-    qrUA.addEventListener('dragover',  e => { e.preventDefault(); qrUA.style.borderColor = '#7c3aed'; });
-    qrUA.addEventListener('dragleave', () => { qrUA.style.borderColor = '#444'; });
-    qrUA.addEventListener('drop', e => {
-      e.preventDefault(); qrUA.style.borderColor = '#444';
-      const fi = document.getElementById('qr_file');
-      fi.files = e.dataTransfer.files; handleQR(fi);
-    });
-  </script>
+  const qrUA = document.getElementById('qrUploadArea');
+  qrUA.addEventListener('dragover',  e => { e.preventDefault(); qrUA.style.borderColor = '#7c3aed'; });
+  qrUA.addEventListener('dragleave', () => { qrUA.style.borderColor = '#444'; });
+  qrUA.addEventListener('drop', e => {
+    e.preventDefault(); qrUA.style.borderColor = '#444';
+    const fi = document.getElementById('qr_file');
+    fi.files = e.dataTransfer.files; handleQR(fi);
+  });
+</script>
 </body>
 </html>
