@@ -24,25 +24,22 @@
     .form-control::placeholder, textarea::placeholder { color: #666 !important; }
     .form-label { color: #aaa; font-size: .82rem; }
 
-    .btn-morado  { background: #7c3aed; border: none; color: #fff; }
-    .btn-morado:hover  { background: #6d28d9; color: #fff; }
+    .btn-morado { background: #7c3aed; border: none; color: #fff; }
+    .btn-morado:hover { background: #6d28d9; color: #fff; }
     .btn-outline-morado { border: 1px solid #7c3aed; color: #a78bfa; background: none; }
     .btn-outline-morado:hover { background: #7c3aed; color: #fff; }
 
-    /* Tabla */
     .table { color: #f0f0f0; }
     .table thead th { background: #1a0a2e; color: #c4b5fd; border-color: #333; font-size: .82rem; }
     .table tbody td { border-color: #2a2a2a; font-size: .85rem; vertical-align: middle; }
     .table tbody tr:hover { background: #252525; cursor: pointer; }
     .table tbody tr.selected-row { background: #2d1b4e !important; }
 
-    /* Badges estado */
     .badge-espera     { background: #444;    color: #f0f0f0; }
     .badge-confirmado { background: #166534; color: #bbf7d0; }
     .badge-rechazado  { background: #7f1d1d; color: #fecaca; }
     .badge-cita       { background: #1e3a5f; color: #bae6fd; }
 
-    /* Upload */
     .upload-area {
       border: 2px dashed #444; border-radius: 8px; background: #2a2a2a;
       padding: 1rem; text-align: center; cursor: pointer;
@@ -51,18 +48,15 @@
     .upload-area:hover { border-color: #7c3aed; }
     .upload-area input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
 
-    /* Panel detalle */
     #detailPanel { display: none; }
+    #placeholderPanel { display: block; }
     .detail-label { font-size: .72rem; color: #888; text-transform: uppercase; letter-spacing: .5px; }
     .detail-value { font-size: .9rem; margin-bottom: .75rem; }
 
-    /* Login */
     #loginPanel { min-height: 100vh; display: flex; align-items: center; justify-content: center; }
     #appPanel   { display: none; }
 
     .ref-img { max-height: 120px; border-radius: 6px; border: 1px solid #444; }
-
-    .toast-container { position: fixed; bottom: 1rem; right: 1rem; z-index: 9999; }
   </style>
 </head>
 <body>
@@ -73,17 +67,17 @@
       <h5 style="color:#c4b5fd;" class="mb-3 text-center"><i class="bi bi-shield-lock me-1"></i>Panel Admin</h5>
       <div class="mb-3">
         <label class="form-label">Contraseña</label>
-        <input type="password" class="form-control" id="passwordInput" placeholder="••••••••" onkeydown="if(event.key==='Enter') login()">
+        <input type="password" class="form-control" id="passwordInput" placeholder="••••••••"
+          onkeydown="if(event.key==='Enter') login()">
       </div>
       <button class="btn btn-morado w-100" onclick="login()">Ingresar</button>
       <div id="loginError" style="font-size:.8rem; color:#f87171; margin-top:.5rem; display:none;">Contraseña incorrecta.</div>
     </div>
   </div>
 
-  <!-- APP PRINCIPAL -->
+  <!-- APP -->
   <div id="appPanel">
 
-    <!-- Header -->
     <div style="background:#1a0a2e; border-bottom:2px solid #7c3aed; padding:.75rem 0;">
       <div class="container-fluid px-3 d-flex justify-content-between align-items-center">
         <h5 class="mb-0" style="color:#c4b5fd;"><i class="bi bi-speedometer2 me-1"></i>Panel Admin — WebJuan</h5>
@@ -102,15 +96,13 @@
     <div class="container-fluid px-3 py-3">
       <div class="row g-3">
 
-        <!-- LISTA DE SOLICITUDES -->
+        <!-- LISTA -->
         <div class="col-12 col-lg-7">
           <div class="card p-3">
             <div class="d-flex justify-content-between align-items-center mb-2">
               <h6 style="color:#c4b5fd;" class="mb-0"><i class="bi bi-list-ul me-1"></i>Solicitudes</h6>
               <span id="totalSolicitudes" style="font-size:.78rem; color:#666;"></span>
             </div>
-
-            <!-- Filtro -->
             <div class="mb-2">
               <select class="form-select form-select-sm" id="filtroEstado" onchange="filtrar()">
                 <option value="">Todos los estados</option>
@@ -120,16 +112,11 @@
                 <option value="Agendar cita">Agendar cita</option>
               </select>
             </div>
-
             <div style="overflow-x:auto;">
               <table class="table table-sm mb-0">
                 <thead>
                   <tr>
-                    <th>ID</th>
-                    <th>Nombre</th>
-                    <th>Telefono</th>
-                    <th>Estado</th>
-                    <th>Fecha</th>
+                    <th>ID</th><th>Nombre</th><th>Telefono</th><th>Estado</th><th>Fecha</th>
                   </tr>
                 </thead>
                 <tbody id="tablaBody">
@@ -140,8 +127,9 @@
           </div>
         </div>
 
-        <!-- PANEL DETALLE / ACCIÓN -->
+        <!-- DETALLE -->
         <div class="col-12 col-lg-5">
+
           <div class="card p-3" id="detailPanel">
             <h6 style="color:#c4b5fd;" class="mb-3"><i class="bi bi-pencil-square me-1"></i>Gestionar solicitud</h6>
 
@@ -168,106 +156,97 @@
               <div class="detail-label">Descripcion del cliente</div>
               <div class="detail-value" id="d_obs_cliente" style="font-size:.82rem; color:#ccc;">—</div>
               <div class="detail-label">Imagen de referencia</div>
-              <div id="d_referencia_wrap">
-                <span style="color:#666; font-size:.82rem;">Sin imagen</span>
+              <div id="d_referencia_wrap"><span style="color:#666; font-size:.82rem;">Sin imagen</span></div>
+            </div>
+
+            <!-- Form acción — usa form.submit() para garantizar ejecución completa -->
+            <form id="adminForm"
+                  action="https://script.google.com/macros/s/AKfycbzHRxeLzCId6d7Ul3BblQ2jw4oXKBjH1MkNyrSwzucLNYCBphTfADTqh0_eMU0QwJU/exec"
+                  method="POST"
+                  enctype="multipart/form-data">
+
+              <input type="hidden" name="accion"     id="f_accion"     value="actualizar">
+              <input type="hidden" name="id"         id="f_id">
+              <input type="hidden" name="url_qr"     id="f_url_qr">
+              <input type="hidden" name="enviarWHA"  id="f_enviarWHA"  value="false">
+
+              <div class="mb-3">
+                <label class="form-label">Estado</label>
+                <select class="form-select" name="estado" id="a_estado">
+                  <option value="En Espera">En Espera</option>
+                  <option value="Confirmado">Confirmado</option>
+                  <option value="Rechazado">Rechazado</option>
+                  <option value="Agendar cita">Agendar cita</option>
+                </select>
               </div>
-            </div>
 
-            <!-- Formulario acción -->
-            <div class="mb-3">
-              <label class="form-label">Estado</label>
-              <select class="form-select" id="a_estado">
-                <option value="En Espera">En Espera</option>
-                <option value="Confirmado">Confirmado</option>
-                <option value="Rechazado">Rechazado</option>
-                <option value="Agendar cita">Agendar cita</option>
-              </select>
-            </div>
-
-            <div class="mb-3">
-              <label class="form-label">Monto (solo Confirmado)</label>
-              <input type="text" class="form-control" id="a_monto" placeholder="Ej: Bs. 500">
-            </div>
-
-            <div class="mb-3">
-              <label class="form-label">Observacion empresa</label>
-              <textarea class="form-control" id="a_obs_empresa" rows="3"
-                placeholder="Motivo de rechazo, detalles de la cita, notas internas..."></textarea>
-            </div>
-
-            <!-- QR upload -->
-            <div class="mb-3" id="qrSection">
-              <label class="form-label" style="color:#c4b5fd;">QR de pago (solo Confirmado)</label>
-              <div class="upload-area" id="qrUploadArea">
-                <input type="file" id="qr_file" accept="image/*" onchange="handleQR(this)">
-                <i class="bi bi-qr-code" style="font-size:1.5rem; color:#7c3aed;"></i>
-                <p style="font-size:.8rem; color:#888; margin:.25rem 0 0;">Sube el QR de pago</p>
+              <div class="mb-3">
+                <label class="form-label">Monto (solo Confirmado)</label>
+                <input type="text" class="form-control" name="monto" id="a_monto" placeholder="Ej: Bs. 500">
               </div>
-              <div id="qrPreviewWrap" style="display:none; margin-top:.5rem;">
-                <img id="qrPreview" style="max-height:100px; border-radius:6px; border:1px solid #444;">
-                <div id="qrFilename" style="font-size:.75rem; color:#6ee7b7; margin-top:.3rem;"></div>
+
+              <div class="mb-3">
+                <label class="form-label">Observacion empresa</label>
+                <textarea class="form-control" name="obs_empresa" id="a_obs_empresa" rows="3"
+                  placeholder="Motivo de rechazo, detalles de cita, notas..."></textarea>
               </div>
-              <div id="qrUploadStatus" style="font-size:.78rem; color:#a78bfa; display:none; margin-top:.3rem;"></div>
-            </div>
 
-            <!-- Enviar WHA -->
-            <div class="mb-3 d-flex align-items-center gap-2">
-              <input type="checkbox" class="form-check-input" id="chkWHA" style="width:18px; height:18px;">
-              <label style="font-size:.85rem; color:#aaa;">Enviar mensaje por WhatsApp y correo</label>
-            </div>
+              <!-- QR -->
+              <div class="mb-3">
+                <label class="form-label" style="color:#c4b5fd;">QR de pago (solo Confirmado)</label>
+                <div class="upload-area" id="qrUploadArea">
+                  <input type="file" id="qr_file" accept="image/*" onchange="handleQR(this)">
+                  <i class="bi bi-qr-code" style="font-size:1.5rem; color:#7c3aed;"></i>
+                  <p style="font-size:.8rem; color:#888; margin:.25rem 0 0;">Sube el QR de pago</p>
+                </div>
+                <div id="qrPreviewWrap" style="display:none; margin-top:.5rem;">
+                  <img id="qrPreview" style="max-height:100px; border-radius:6px; border:1px solid #444;">
+                  <div id="qrFilename" style="font-size:.75rem; color:#6ee7b7; margin-top:.3rem;"></div>
+                </div>
+                <div id="qrUploadStatus" style="font-size:.78rem; color:#a78bfa; display:none; margin-top:.3rem;"></div>
+              </div>
 
-            <button class="btn btn-morado w-100" id="btnGuardar" onclick="guardarCambios()">
-              <span id="btnGuardarText"><i class="bi bi-save me-1"></i>Guardar cambios</span>
-              <span id="btnGuardarLoading" style="display:none;">
-                <span class="spinner-border spinner-border-sm me-1"></span>Guardando...
-              </span>
-            </button>
+              <!-- Enviar WHA -->
+              <div class="mb-3 d-flex align-items-center gap-2">
+                <input type="checkbox" class="form-check-input" id="chkWHA"
+                  style="width:18px; height:18px;" onchange="document.getElementById('f_enviarWHA').value = this.checked">
+                <label style="font-size:.85rem; color:#aaa;">Enviar mensaje por WhatsApp y correo</label>
+              </div>
 
+              <button type="button" class="btn btn-morado w-100" id="btnGuardar" onclick="guardarCambios()">
+                <span id="btnGuardarText"><i class="bi bi-save me-1"></i>Guardar cambios</span>
+                <span id="btnGuardarLoading" style="display:none;">
+                  <span class="spinner-border spinner-border-sm me-1"></span>Procesando...
+                </span>
+              </button>
+
+            </form>
           </div>
 
-          <!-- Placeholder cuando no hay seleccion -->
           <div class="card p-4 text-center" id="placeholderPanel">
             <i class="bi bi-hand-index" style="font-size:2rem; color:#444;"></i>
             <p class="mt-2" style="color:#555; font-size:.85rem;">Selecciona una solicitud de la lista</p>
           </div>
+
         </div>
-
-      </div>
-    </div>
-  </div>
-
-  <!-- TOASTS -->
-  <div class="toast-container">
-    <div id="toastOk" class="toast align-items-center text-bg-success border-0" role="alert" data-bs-delay="3000">
-      <div class="d-flex">
-        <div class="toast-body" id="toastOkMsg">Guardado correctamente.</div>
-        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
-      </div>
-    </div>
-    <div id="toastErr" class="toast align-items-center text-bg-danger border-0" role="alert" data-bs-delay="4000">
-      <div class="d-flex">
-        <div class="toast-body" id="toastErrMsg">Error al guardar.</div>
-        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
       </div>
     </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-    // ══════════════════════════════════════════
-    // CONFIG
-    // ══════════════════════════════════════════
     const APPS_SCRIPT_URL   = 'https://script.google.com/macros/s/AKfycbzHRxeLzCId6d7Ul3BblQ2jw4oXKBjH1MkNyrSwzucLNYCBphTfADTqh0_eMU0QwJU/exec';
     const CLOUDINARY_CLOUD  = 'dpfoul2dc';
     const CLOUDINARY_PRESET = 'Unsigned';
     const PASSWORD          = 'webjuan2025'; // ✏️ cambia tu contraseña
 
-    // ══════════════════════════════════════════
+    let todasSolicitudes = [];
+    let solicitudActual  = null;
+    let urlQRCloudinary  = '';
+
     // LOGIN
-    // ══════════════════════════════════════════
     function login() {
-      const pwd = document.getElementById('passwordInput').value;
-      if (pwd === PASSWORD) {
+      if (document.getElementById('passwordInput').value === PASSWORD) {
         document.getElementById('loginPanel').style.display = 'none';
         document.getElementById('appPanel').style.display   = 'block';
         cargarSolicitudes();
@@ -281,46 +260,33 @@
       document.getElementById('passwordInput').value = '';
     }
 
-    // ══════════════════════════════════════════
-    // DATOS
-    // ══════════════════════════════════════════
-    let todasSolicitudes = [];
-    let solicitudActual  = null;
-    let urlQRCloudinary  = '';
-
+    // CARGAR
     async function cargarSolicitudes() {
       try {
         const r = await fetch(APPS_SCRIPT_URL + '?action=solicitudes');
         const d = await r.json();
-        todasSolicitudes = (d.data || []).reverse(); // más recientes primero
+        todasSolicitudes = (d.data || []).reverse();
         filtrar();
-        document.getElementById('lastUpdate').textContent =
-          'Actualizado: ' + new Date().toLocaleTimeString();
-      } catch(e) {
-        console.warn('Error cargando:', e);
-      }
+        document.getElementById('lastUpdate').textContent = 'Actualizado: ' + new Date().toLocaleTimeString();
+      } catch(e) { console.warn('Error cargando:', e); }
     }
 
     function filtrar() {
       const filtro = document.getElementById('filtroEstado').value;
-      const lista  = filtro
-        ? todasSolicitudes.filter(s => s.Estado === filtro)
-        : todasSolicitudes;
+      const lista  = filtro ? todasSolicitudes.filter(s => s.Estado === filtro) : todasSolicitudes;
       renderTabla(lista);
     }
 
     function renderTabla(lista) {
       const tbody = document.getElementById('tablaBody');
       document.getElementById('totalSolicitudes').textContent = lista.length + ' solicitudes';
-
       if (!lista.length) {
         tbody.innerHTML = '<tr><td colspan="5" class="text-center" style="color:#666;">Sin solicitudes</td></tr>';
         return;
       }
-
       tbody.innerHTML = lista.map(function(s) {
         const fecha = s.Timestamp ? new Date(s.Timestamp).toLocaleDateString() : '—';
-        return '<tr onclick="seleccionar(' + JSON.stringify(s).replace(/"/g, '&quot;') + ')" data-id="' + s.id + '">' +
+        return '<tr onclick=\'seleccionar(' + JSON.stringify(JSON.stringify(s)) + ')\' data-id="' + s.id + '">' +
           '<td>#' + s.id + '</td>' +
           '<td>' + (s.Nombre || '—') + '</td>' +
           '<td>' + (s.Telefono || '—') + '</td>' +
@@ -331,67 +297,53 @@
     }
 
     function badgeEstado(estado) {
-      const map = {
-        'En Espera':    'badge-espera',
-        'Confirmado':   'badge-confirmado',
-        'Rechazado':    'badge-rechazado',
-        'Agendar cita': 'badge-cita',
-      };
-      const cls = map[estado] || 'badge-espera';
-      return '<span class="badge ' + cls + '">' + (estado || 'En Espera') + '</span>';
+      const map = { 'En Espera':'badge-espera','Confirmado':'badge-confirmado','Rechazado':'badge-rechazado','Agendar cita':'badge-cita' };
+      return '<span class="badge ' + (map[estado]||'badge-espera') + '">' + (estado||'En Espera') + '</span>';
     }
 
-    // ══════════════════════════════════════════
-    // SELECCIONAR SOLICITUD
-    // ══════════════════════════════════════════
-    function seleccionar(s) {
+    // SELECCIONAR
+    function seleccionar(sJson) {
+      const s = JSON.parse(sJson);
       solicitudActual = s;
-      urlQRCloudinary = '';
+      urlQRCloudinary = s.url_qr || '';
 
-      // Marcar fila
       document.querySelectorAll('#tablaBody tr').forEach(tr => tr.classList.remove('selected-row'));
       const fila = document.querySelector('#tablaBody tr[data-id="' + s.id + '"]');
       if (fila) fila.classList.add('selected-row');
 
-      // Llenar detalle
       document.getElementById('d_id').textContent       = '#' + s.id;
       document.getElementById('d_nombre').textContent   = s.Nombre    || '—';
       document.getElementById('d_telefono').textContent = s.Telefono  || '—';
       document.getElementById('d_correo').textContent   = s.Correo    || '—';
       document.getElementById('d_obs_cliente').textContent = s.Obs_cliente || 'Sin descripcion';
 
-      // Imagen referencia
       const refWrap = document.getElementById('d_referencia_wrap');
       if (s.url_referencia && s.url_referencia !== 'Sin referencia') {
-        refWrap.innerHTML = '<a href="' + s.url_referencia + '" target="_blank">' +
-          '<img src="' + s.url_referencia + '" class="ref-img mt-1"></a>';
+        refWrap.innerHTML = '<a href="' + s.url_referencia + '" target="_blank"><img src="' + s.url_referencia + '" class="ref-img mt-1"></a>';
       } else {
         refWrap.innerHTML = '<span style="color:#666; font-size:.82rem;">Sin imagen</span>';
       }
 
-      // Llenar form acción
-      document.getElementById('a_estado').value      = s.Estado      || 'En Espera';
-      document.getElementById('a_monto').value        = s.monto       || '';
-      document.getElementById('a_obs_empresa').value  = s.Obs_empresa || '';
-      document.getElementById('chkWHA').checked       = false;
+      document.getElementById('f_id').value            = s.id;
+      document.getElementById('a_estado').value        = s.Estado      || 'En Espera';
+      document.getElementById('a_monto').value         = s.monto       || '';
+      document.getElementById('a_obs_empresa').value   = s.Obs_empresa || '';
+      document.getElementById('chkWHA').checked        = false;
+      document.getElementById('f_enviarWHA').value     = 'false';
+      document.getElementById('f_url_qr').value        = s.url_qr      || '';
 
-      // Reset QR
-      document.getElementById('qr_file').value        = '';
-      document.getElementById('qrPreviewWrap').style.display = 'none';
+      document.getElementById('qr_file').value         = '';
+      document.getElementById('qrPreviewWrap').style.display  = 'none';
       document.getElementById('qrUploadStatus').style.display = 'none';
 
-      // Mostrar panel
-      document.getElementById('detailPanel').style.display  = 'block';
+      document.getElementById('detailPanel').style.display    = 'block';
       document.getElementById('placeholderPanel').style.display = 'none';
     }
 
-    // ══════════════════════════════════════════
-    // QR UPLOAD
-    // ══════════════════════════════════════════
+    // QR
     function handleQR(input) {
       const file = input.files[0];
       if (!file) return;
-      urlQRCloudinary = '';
       document.getElementById('qrFilename').textContent = '✔ ' + file.name;
       const r = new FileReader();
       r.onload = e => {
@@ -406,79 +358,44 @@
       fd.append('file', file);
       fd.append('upload_preset', CLOUDINARY_PRESET);
       fd.append('folder', 'qr_pagos');
-      const resp = await fetch('https://api.cloudinary.com/v1_1/' + CLOUDINARY_CLOUD + '/upload', {
-        method: 'POST', body: fd
-      });
+      const resp = await fetch('https://api.cloudinary.com/v1_1/' + CLOUDINARY_CLOUD + '/upload', { method: 'POST', body: fd });
       const data = await resp.json();
       if (data.secure_url) return data.secure_url;
       throw new Error('Error Cloudinary QR');
     }
 
-    // ══════════════════════════════════════════
-    // GUARDAR CAMBIOS
-    // ══════════════════════════════════════════
+    // GUARDAR — sube QR a Cloudinary primero, luego form.submit()
     async function guardarCambios() {
       if (!solicitudActual) return;
-
       setBtnGuardar(true);
 
-      const estado      = document.getElementById('a_estado').value;
-      const monto       = document.getElementById('a_monto').value.trim();
-      const obs_empresa = document.getElementById('a_obs_empresa').value.trim();
-      const enviarWHA   = document.getElementById('chkWHA').checked;
-      const qrFile      = document.getElementById('qr_file').files[0];
+      const qrFile = document.getElementById('qr_file').files[0];
 
-      // Subir QR a Cloudinary si hay uno
-      let url_qr = solicitudActual.url_qr || '';
+      // Subir QR si hay uno nuevo
       if (qrFile) {
         try {
           document.getElementById('qrUploadStatus').textContent = '⏳ Subiendo QR...';
           document.getElementById('qrUploadStatus').style.display = 'block';
-          url_qr = await subirQRCloudinary(qrFile);
-          document.getElementById('qrUploadStatus').textContent = '✔ QR subido';
+          const url = await subirQRCloudinary(qrFile);
+          document.getElementById('f_url_qr').value = url;
+          document.getElementById('qrUploadStatus').textContent = '✔ QR subido, enviando...';
         } catch(e) {
-          document.getElementById('qrUploadStatus').textContent = '⚠️ Error subiendo QR';
+          document.getElementById('qrUploadStatus').textContent = '⚠️ Error subiendo QR, se envia sin el.';
           console.warn(e);
         }
       }
 
-      // Armar form y enviar al Apps Script
-      const form = document.createElement('form');
-      form.method  = 'POST';
-      form.action  = APPS_SCRIPT_URL;
-      form.enctype = 'multipart/form-data';
-      form.style.display = 'none';
-
-      const campos = {
-        accion:       'actualizar',
-        id:           solicitudActual.id,
-        estado:       estado,
-        monto:        monto,
-        obs_empresa:  obs_empresa,
-        url_qr:       url_qr,
-        enviarWHA:    String(enviarWHA),
-      };
-
-      Object.entries(campos).forEach(function([k, v]) {
-        const input = document.createElement('input');
-        input.name  = k;
-        input.value = v;
-        form.appendChild(input);
-      });
-
-      document.body.appendChild(form);
-      form.submit();
+      // form.submit() garantiza ejecución completa en Apps Script
+      document.getElementById('adminForm').submit();
     }
 
     function setBtnGuardar(on) {
-      document.getElementById('btnGuardar').disabled            = on;
-      document.getElementById('btnGuardarText').style.display   = on ? 'none'   : 'inline';
+      document.getElementById('btnGuardar').disabled             = on;
+      document.getElementById('btnGuardarText').style.display    = on ? 'none'   : 'inline';
       document.getElementById('btnGuardarLoading').style.display = on ? 'inline' : 'none';
     }
 
-    // ══════════════════════════════════════════
-    // DRAG & DROP QR
-    // ══════════════════════════════════════════
+    // DRAG DROP QR
     const qrUA = document.getElementById('qrUploadArea');
     qrUA.addEventListener('dragover',  e => { e.preventDefault(); qrUA.style.borderColor = '#7c3aed'; });
     qrUA.addEventListener('dragleave', () => { qrUA.style.borderColor = '#444'; });
