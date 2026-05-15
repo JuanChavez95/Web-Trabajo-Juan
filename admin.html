@@ -159,16 +159,15 @@
               <div id="d_referencia_wrap"><span style="color:#666; font-size:.82rem;">Sin imagen</span></div>
             </div>
 
-            <!-- Form acción — usa form.submit() para garantizar ejecución completa -->
+            <!-- ✅ FIX: Sin enctype multipart/form-data — así e.parameter funciona en Apps Script -->
             <form id="adminForm"
                   action="https://script.google.com/macros/s/AKfycbzHRxeLzCId6d7Ul3BblQ2jw4oXKBjH1MkNyrSwzucLNYCBphTfADTqh0_eMU0QwJU/exec"
-                  method="POST"
-                  enctype="multipart/form-data">
+                  method="POST">
 
-              <input type="hidden" name="accion"     id="f_accion"     value="actualizar">
-              <input type="hidden" name="id"         id="f_id">
-              <input type="hidden" name="url_qr"     id="f_url_qr">
-              <input type="hidden" name="enviarWHA"  id="f_enviarWHA"  value="false">
+              <input type="hidden" name="accion"    id="f_accion"    value="actualizar">
+              <input type="hidden" name="id"        id="f_id">
+              <input type="hidden" name="url_qr"    id="f_url_qr">
+              <input type="hidden" name="enviarWHA" id="f_enviarWHA" value="false">
 
               <div class="mb-3">
                 <label class="form-label">Estado</label>
@@ -238,11 +237,10 @@
     const APPS_SCRIPT_URL   = 'https://script.google.com/macros/s/AKfycbzHRxeLzCId6d7Ul3BblQ2jw4oXKBjH1MkNyrSwzucLNYCBphTfADTqh0_eMU0QwJU/exec';
     const CLOUDINARY_CLOUD  = 'dpfoul2dc';
     const CLOUDINARY_PRESET = 'Unsigned';
-    const PASSWORD          = 'webjuan2025'; // ✏️ cambia tu contraseña
+    const PASSWORD          = 'webjuan2025';
 
     let todasSolicitudes = [];
     let solicitudActual  = null;
-    let urlQRCloudinary  = '';
 
     // LOGIN
     function login() {
@@ -305,7 +303,6 @@
     function seleccionar(sJson) {
       const s = JSON.parse(sJson);
       solicitudActual = s;
-      urlQRCloudinary = s.url_qr || '';
 
       document.querySelectorAll('#tablaBody tr').forEach(tr => tr.classList.remove('selected-row'));
       const fila = document.querySelector('#tablaBody tr[data-id="' + s.id + '"]');
@@ -336,7 +333,7 @@
       document.getElementById('qrPreviewWrap').style.display  = 'none';
       document.getElementById('qrUploadStatus').style.display = 'none';
 
-      document.getElementById('detailPanel').style.display    = 'block';
+      document.getElementById('detailPanel').style.display     = 'block';
       document.getElementById('placeholderPanel').style.display = 'none';
     }
 
@@ -364,14 +361,13 @@
       throw new Error('Error Cloudinary QR');
     }
 
-    // GUARDAR — sube QR a Cloudinary primero, luego form.submit()
+    // GUARDAR
     async function guardarCambios() {
       if (!solicitudActual) return;
       setBtnGuardar(true);
 
       const qrFile = document.getElementById('qr_file').files[0];
 
-      // Subir QR si hay uno nuevo
       if (qrFile) {
         try {
           document.getElementById('qrUploadStatus').textContent = '⏳ Subiendo QR...';
@@ -385,7 +381,6 @@
         }
       }
 
-      // form.submit() garantiza ejecución completa en Apps Script
       document.getElementById('adminForm').submit();
     }
 
